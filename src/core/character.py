@@ -103,6 +103,8 @@ class Merchant(Character):
         super().__init__(name, race, "Продавец", **kwargs)
 
 
+
+#вот для удобства"
 # hero = Character(
 #     name="Тестовый",
 #     race="Эльф",
