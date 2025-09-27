@@ -1,9 +1,20 @@
-# src/core/character.py
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 
 class Character:
-    def __init__(self, name: str, race: str, char_class: str, level: int = 1, attributes: Dict[str, int] = None):
+    def __init__(
+        self,
+        name: str,
+        race: str,
+        char_class: str,
+        level: int = 1,
+        attributes: Optional[Dict[str, int]] = None,
+        hp: Optional[int] = None,
+        experience: int = 0,
+        inventory: Optional[List[str]] = None,
+        skills: Optional[Dict[str, int]] = None,
+        spells: Optional[List[str]] = None,
+    ):
         self.name = name
         self.race = race
         self.char_class = char_class
@@ -16,11 +27,13 @@ class Character:
             "wisdom": 10,
             "charisma": 10
         }
-        self.hp = self.calculate_hp()
-        self.inventory: List[str] = []
-        self.skills: Dict[str, int] = {}
-        self.spells: List[str] = []
-        self.experience = 0
+
+        # либо берём переданный hp, либо считаем
+        self.hp = hp if hp is not None else self.calculate_hp()
+        self.experience = experience
+        self.inventory = inventory or []
+        self.skills = skills or {}
+        self.spells = spells or []
 
     def calculate_hp(self) -> int:
         """Вычисление хп по классу и телосложению"""
@@ -28,15 +41,17 @@ class Character:
             "Воин": 12,
             "Маг": 6,
             "Плут": 8,
-            "Обычный NPC": 4
+            "Торговец": 5,
+            "Продавец": 5,
+            "NPC": 4
         }
         con_mod = (self.attributes["constitution"] - 10) // 2
-        return base_hp.get(self.char_class, 6) + con_mod
+        return base_hp.get(self.char_class, 6) + con_mod + (self.level - 1) * 5
 
     def level_up(self):
         """Повышение уровня"""
         self.level += 1
-        self.hp += (self.calculate_hp() // 2)  # при апе хп растет
+        self.hp += 5 + (self.attributes["constitution"] - 10) // 2
         self.experience = 0
 
     def add_item(self, item: str):
@@ -50,33 +65,55 @@ class Character:
             self.spells.append(spell)
 
     def __repr__(self):
-        return f"<{self.char_class} {self.name} (Lvl {self.level}, HP {self.hp})>"
+        return f"<{self.char_class} {self.name} (Lvl {self.level}, HP {self.hp},)>"
 
 
 # ====== Игровые классы персонажей ======
 
 class Warrior(Character):
-    def __init__(self, name: str, race: str, attributes: Dict[str, int] = None):
-        super().__init__(name, race, "Воин", attributes=attributes)
+    def __init__(self, name: str, race: str, **kwargs):
+        super().__init__(name, race, "Воин", **kwargs)
 
 
 class Mage(Character):
-    def __init__(self, name: str, race: str, attributes: Dict[str, int] = None):
-        super().__init__(name, race, "Маг", attributes=attributes)
+    def __init__(self, name: str, race: str, **kwargs):
+        super().__init__(name, race, "Маг", **kwargs)
 
 
 class Rogue(Character):
-    def __init__(self, name: str, race: str, attributes: Dict[str, int] = None):
-        super().__init__(name, race, "Плут", attributes=attributes)
+    def __init__(self, name: str, race: str, **kwargs):
+        super().__init__(name, race, "Плут", **kwargs)
 
 
 # ====== NPC ======
 
 class Trader(Character):
-    def __init__(self, name: str, race: str = "Человек"):
-        super().__init__(name, race, "Торговец", level=1, attributes={"strength": 8, "dexterity": 8, "constitution": 8, "intelligence": 12, "wisdom": 10, "charisma": 14})
+    def __init__(self, name: str, race: str = "Человек", **kwargs):
+        default_attr = {"strength": 8, "dexterity": 8, "constitution": 8,
+                        "intelligence": 12, "wisdom": 10, "charisma": 14}
+        kwargs.setdefault("attributes", default_attr)
+        super().__init__(name, race, "Торговец", **kwargs)
 
 
 class Merchant(Character):
-    def __init__(self, name: str, race: str = "Человек"):
-        super().__init__(name, race, "Продавец", level=1, attributes={"strength": 7, "dexterity": 9, "constitution": 9, "intelligence": 11, "wisdom": 10, "charisma": 15})
+    def __init__(self, name: str, race: str = "Человек", **kwargs):
+        default_attr = {"strength": 7, "dexterity": 9, "constitution": 9,
+                        "intelligence": 11, "wisdom": 10, "charisma": 15}
+        kwargs.setdefault("attributes", default_attr)
+        super().__init__(name, race, "Продавец", **kwargs)
+
+
+hero = Character(
+    name="Тестовый",
+    race="Эльф",
+    char_class="Воин",
+    level=3,
+    attributes={},
+    hp=50,
+    inventory=["Меч", "Щит"],
+    skills={"Атака": 2, "Защита": 1},
+    spells=[]
+)
+
+print(hero)
+print("Инвентарь:", hero.attributes)
