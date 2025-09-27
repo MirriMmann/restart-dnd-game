@@ -1,0 +1,1 @@
+# src\llm\openai_adapter.py
