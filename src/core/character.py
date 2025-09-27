@@ -1,3 +1,5 @@
+# src\core\character.py
+
 from typing import Dict, List, Optional
 
 
