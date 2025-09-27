@@ -37,18 +37,18 @@ class Character:
         self.skills = skills or {}
         self.spells = spells or []
 
-    def calculate_hp(self) -> int:
-        """Вычисление хп по классу и телосложению"""
-        base_hp = {
-            "Воин": 12,
-            "Маг": 6,
-            "Плут": 8,
-            "Торговец": 5,
-            "Продавец": 5,
-            "NPC": 4
-        }
-        con_mod = (self.attributes["constitution"] - 10) // 2
-        return base_hp.get(self.char_class, 6) + con_mod + (self.level - 1) * 5
+    # def calculate_hp(self) -> int:
+    #     """Вычисление хп по классу и телосложению"""   доработать потом
+    #     base_hp = {
+    #         "Воин": 12,
+    #         "Маг": 6,
+    #         "Плут": 8,
+    #         "Торговец": 5,
+    #         "Продавец": 5,
+    #         "NPC": 4
+    #     }
+    #     con_mod = (self.attributes["constitution"] - 10) // 2
+    #     return base_hp.get(self.char_class, 6) + con_mod + (self.level - 1) * 5
 
     def level_up(self):
         """Повышение уровня"""
@@ -85,6 +85,15 @@ class Merchant(Character):
                         "intelligence": 11, "wisdom": 10, "charisma": 15}
         kwargs.setdefault("attributes", default_attr)
         super().__init__(name, race, "Продавец", **kwargs)
+
+
+
+
+
+
+
+
+
 
 
 
