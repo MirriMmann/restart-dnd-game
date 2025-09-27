@@ -67,24 +67,6 @@ class Character:
     def __repr__(self):
         return f"<{self.char_class} {self.name} (Lvl {self.level}, HP {self.hp},)>"
 
-
-# ====== Игровые классы персонажей ======
-
-class Warrior(Character):
-    def __init__(self, name: str, race: str, **kwargs):
-        super().__init__(name, race, "Воин", **kwargs)
-
-
-class Mage(Character):
-    def __init__(self, name: str, race: str, **kwargs):
-        super().__init__(name, race, "Маг", **kwargs)
-
-
-class Rogue(Character):
-    def __init__(self, name: str, race: str, **kwargs):
-        super().__init__(name, race, "Плут", **kwargs)
-
-
 # ====== NPC ======
 
 class Trader(Character):
@@ -104,7 +86,7 @@ class Merchant(Character):
 
 
 
-#вот для удобства"
+#вот для удобства
 # hero = Character(
 #     name="Тестовый",
 #     race="Эльф",
