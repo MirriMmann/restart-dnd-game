@@ -83,8 +83,8 @@ class Dragon(Monster):
         super().__init__(name, "Дракон", complexity=1000, **kwargs)
 
 
-
-
+dragon = Dragon()
+print(dragon.loot)
 
 
 
