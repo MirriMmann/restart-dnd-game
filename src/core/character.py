@@ -89,17 +89,17 @@ class Merchant(Character):
 
 
 #вот для удобства
-# hero = Character(
-#     name="Тестовый",
-#     race="Эльф",
-#     char_class="Воин",
-#     level=3,
-#     attributes={},
-#     hp=50,
-#     inventory=["Меч", "Щит"],
-#     skills={"Атака": 2, "Защита": 1},
-#     spells=[]
-# )
+hero = Character(
+    name="Тестовый",
+    race="Эльф",
+    char_class="Воин",
+    level=3,
+    attributes={},
+    hp=50,
+    inventory=["Меч", "Щит"],
+    skills={"Атака": 2, "Защита": 1},
+    spells=[]
+)
 
-# print(hero)
-# print("Инвентарь:", hero.attributes)
+print(hero)
+print("Инвентарь:", hero.attributes)
