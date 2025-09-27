@@ -5,11 +5,11 @@ class Spell:
     def __init__(
         self,
         name: str,
-        level: int,                 # уровень заклинания
+        level: int,
         school: str,                # школа магии
         description: str = "",
-        damage: Optional[str] = None,   # урон
-        effect: Optional[str] = None,   # эффект
+        damage: Optional[str] = None,
+        effect: Optional[str] = None,
         mana_cost: int = 0              # стоимость маны
     ):
         self.name = name
@@ -54,6 +54,3 @@ class MagicMissile(Spell):
         kwargs.setdefault("damage", "3d4+3")  # три снаряда по 1d4+1
         kwargs.setdefault("mana_cost", 5)
         super().__init__("Магическая стрела", **kwargs)
-
-fireball = Fireball()
-print(fireball)
