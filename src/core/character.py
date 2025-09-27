@@ -248,7 +248,7 @@ character = Character(
 )
 
 # Пример работы:
-character.show_stats()
+# character.show_stats()
 # print(character.hp)
 # print(character.experience)
 

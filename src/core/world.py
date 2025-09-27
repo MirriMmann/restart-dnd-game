@@ -1,6 +1,5 @@
 # src\core\world.py
 
-
 from src.core.character import Character
 import random
 import time
@@ -8,12 +7,13 @@ import time
 class TimeOfDay:
     """Класс для определения времени суток и других факторов."""
     def __init__(self):
-        self.hours = 0  # Часы (0 - 23)
+        self.hours = 6  # Часы (0 - 23)
         self.minutes = 0  # Минуты (0 - 59)
         self.day = 1  # День (1 - n)
         self.season = "Spring"  # Сезон (Весна, Лето, Осень, Зима)
         self.weather = "Clear"  # Погода (Ясно, Дождь, Снег и т.д.)
         self.day_cycle = ["Morning", "Afternoon", "Evening", "Night"]  # Цикл дня и ночи
+        self.weather_conditions = ["Clear", "Rain", "Snow", "Thunderstorm", "Fog", "Windy"]
 
     def increment_time(self, days=0, hours=0, minutes=0):
         """Увеличивает время на заданное количество дней, часов и минут, корректно обрабатывая переносы."""
@@ -66,33 +66,33 @@ class TimeOfDay:
 
     def change_weather(self):
         """Определить погоду (динамично меняется)."""
-        weather_conditions = ["Clear", "Rain", "Snow", "Thunderstorm", "Fog", "Windy"]
-        # return random.choice(weather_conditions)  # Случайная погода
-        return weather_conditions[0]
-    
+        return random.choice(self.weather_conditions)
+
     def next_day(self):
         """Переводит время в следующий день."""
         self.day += 1
         self.hours = 6
         self.minutes = 0
-        self.change_weather()
+        self.weather = self.change_weather()  # Обновляем погоду
         self.update_season()
 
     def get_formatted_time(self):
         """Отображение времени в формате: Часы:Минуты"""
         return f"{self.hours:02}:{self.minutes:02}"
     
-
     def check_daily_event(self):
         """Проверяет, нужно ли провести событие на основе текущего времени суток."""
-        if self.hours == 12 and self.minutes == 0:
-            self.trigger_event("Midday Event")
+        if self.get_time_of_day() == "Morning":
+            self.trigger_event("Morning Quest")
+        if self.get_time_of_day() == "Night":
+            self.trigger_event("Night Patrol")
+        if self.weather == "Rain":
+            self.trigger_event("Rain Event")
 
     def trigger_event(self, event_name):
-        """Запускает событие (например, с выводом сообщения)."""
+        """Запускает событие."""
         print(f"Event triggered: {event_name}")
     
-
     def __repr__(self):
         return f"Day: {self.day} Time: {self.get_formatted_time()} ({self.get_time_of_day()}), Season: {self.season}, Weather: {self.weather}"
 
@@ -100,10 +100,15 @@ class World:
     """Класс мира, включающий в себя элементы времени, погоды, сезонности и событий."""
     def __init__(self, name, setting):
         self.name = name
-        self.setting = setting  # Настройка мира (фэнтези, постапокалипсис и т.д.)
-        self.time = TimeOfDay()  # Время и сутки
+        self.setting = setting  # Тематика мира (фэнтези, постапокалипсис, и т.д.)
+        self.regions = []  # Список регионов
         self.entities = []  # Существа и объекты мира
         self.events = []  # События, зависящие от времени и погоды
+        self.time = TimeOfDay()
+
+    def add_region(self, region):
+        """Добавить регион в мир."""
+        self.regions.append(region)
 
     def add_entity(self, entity):
         """Добавить существо или объект в мир."""
@@ -116,7 +121,6 @@ class World:
     def update_world(self):
         """Обновить мир: увеличиваем время, проверяем события."""
         self.time.update_time()
-        self.time.weather = self.time.change_weather()
         self.trigger_time_based_events()
 
     def trigger_time_based_events(self):
@@ -126,30 +130,23 @@ class World:
         elif self.time.get_time_of_day() == "Morning":
             self.morning_events()
 
-        # Погода может влиять на события, например, дождь может вызвать наводнение или закрытие магазинов.
         if self.time.weather == "Rain":
             self.weather_events("Rain")
 
-        if self.time.weather == "Snow":
-            self.weather_events("Snow")
-
     def night_events(self):
-        """События, происходящие только ночью."""
+        """События, происходящие ночью."""
         print("Nighttime events triggered...")
-        # Например, преступления, скрытые встречи или особые миссии.
 
     def morning_events(self):
-        """События, происходящие только утром."""
+        """События, происходящие утром."""
         print("Morning events triggered...")
-        # Например, утренние ритуалы, открытие магазинов, начало торговли.
 
     def weather_events(self, weather_type):
         """События, зависящие от погоды."""
         print(f"Weather event triggered: {weather_type}")
-        # Например, дождь может вызвать ограничение видимости или затруднить движение.
 
     def __repr__(self):
-        return f"World(name={self.name}, setting={self.setting}, time={self.time})"
+        return f"World(name={self.name}, setting={self.setting}, {len(self.entities)} entities, time={self.time})"
 
 
 
@@ -160,37 +157,60 @@ world = World(name="Epsilon", setting="Modern Post-Apocalypse")
 # Добавление сущностей (например, NPC или локаций)
 world.add_entity(
     Character(
-        name="Тестовый_1",
-        race="Эльф",
+        name="Грог",
+        race="Человек",
         char_class="Воин",
-        level=3,
-        attributes={},
-        hp=50,
+        level=1,
+        strength=16,
+        dexterity=14,
+        constitution=14,
+        intelligence=10,
+        wisdom=8,
+        charisma=12,
+        experience=0,
         inventory=["Меч", "Щит"],
-        skills={"Атака": 2, "Защита": 1},
-        spells=[]
+        skills={
+            "Акробатика": True,  # Обучен
+            "Атлетика": False,   # Не обучен
+            "Магия": False,      # Не обучен
+            "Скрытность": True,  # Обучен
+            "Выступление": True, # Обучен
+        },
+        spells=[],  # Воин не использует магию по умолчанию
     )
 )
 world.add_entity(
     Character(
-        name="Тестовый_2",
-        race="Эльф",
+        name="Грог",
+        race="Человек",
         char_class="Воин",
-        level=3,
-        attributes={},
-        hp=50,
+        level=1,
+        strength=16,
+        dexterity=14,
+        constitution=14,
+        intelligence=10,
+        wisdom=8,
+        charisma=12,
+        experience=0,
         inventory=["Меч", "Щит"],
-        skills={"Атака": 2, "Защита": 1},
-        spells=[]
+        skills={
+            "Акробатика": True,  # Обучен
+            "Атлетика": False,   # Не обучен
+            "Магия": False,      # Не обучен
+            "Скрытность": True,  # Обучен
+            "Выступление": True, # Обучен
+        },
+        spells=[],  # Воин не использует магию по умолчанию
     )
 )
 
-print(world.entities)
+print(world)
+# print(world.entities)
 
 # Запуск мира и событий
-for _ in range(4):  # Симуляция суток (24 часа)
-    world.update_world()
-    print(world.time)  # Отображение текущего времени и погоды
-    time.sleep(1)  # Задержка в 1 секунду для имитации времени
+# for _ in range(4):  # Симуляция суток (24 часа)
+#     world.update_world()
+#     print(world.time)  # Отображение текущего времени и погоды
+#     time.sleep(1)  # Задержка в 1 секунду для имитации времени
 
 
