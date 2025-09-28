@@ -154,4 +154,4 @@ goblin = Monster(
 
 
 goblin.show_stats()
-goblin.drop_loot()
+goblin.drop_loot() 
